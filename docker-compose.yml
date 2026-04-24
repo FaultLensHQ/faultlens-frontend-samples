@@ -1,0 +1,12 @@
+services:
+  faultlens-frontend-sample:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    environment:
+      FAULTLENS_TENANT_HOST: https://TENANT-SLUG.staging.faultlens.in
+      FAULTLENS_PROJECT_API_KEY: CHANGE_ME
+      FAULTLENS_ENVIRONMENT: staging
+      FAULTLENS_RELEASE_PREFIX: frontend-sample
