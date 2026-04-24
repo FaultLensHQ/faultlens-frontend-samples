@@ -1,0 +1,115 @@
+<main class="shell">
+  <section class="hero">
+    <p class="eyebrow">FaultLens Frontend Sample</p>
+    <h1>Test the browser SDK against your own FaultLens workspace.</h1>
+    <p class="lede">
+      This Angular sample sends one unique smoke event with <code>{{ packageName }}</code> so you can verify
+      tenant-host ingestion, project key setup, and hosted event visibility without wiring the SDK into your app first.
+    </p>
+  </section>
+
+  <section class="workspace">
+    <form class="config-panel" (submit)="$event.preventDefault(); sendSmokeEvent()">
+      <div class="field">
+        <label for="tenant-host">Tenant host</label>
+        <input
+          id="tenant-host"
+          name="tenant-host"
+          type="url"
+          [ngModel]="tenantHost()"
+          (ngModelChange)="applyTenantHost($event)"
+          placeholder="https://tenant-slug.staging.faultlens.in"
+          autocomplete="off" />
+        <p class="hint">Use your tenant workspace host, not the shared app host.</p>
+      </div>
+
+      <div class="field">
+        <label for="project-api-key">Project API key</label>
+        <input
+          id="project-api-key"
+          name="project-api-key"
+          type="password"
+          [ngModel]="projectApiKey()"
+          (ngModelChange)="applyProjectApiKey($event)"
+          placeholder="Paste the project ingest key"
+          autocomplete="off" />
+        <p class="hint">Get this from the project setup panel or project overview in FaultLens.</p>
+      </div>
+
+      <div class="grid">
+        <div class="field">
+          <label for="environment">Environment</label>
+          <input
+            id="environment"
+            name="environment"
+            type="text"
+            [ngModel]="environment()"
+            (ngModelChange)="applyEnvironment($event)"
+            placeholder="staging" />
+        </div>
+
+        <div class="field">
+          <label for="release-prefix">Release prefix</label>
+          <input
+            id="release-prefix"
+            name="release-prefix"
+            type="text"
+            [ngModel]="releasePrefix()"
+            (ngModelChange)="applyReleasePrefix($event)"
+            placeholder="frontend-sample" />
+        </div>
+      </div>
+
+      <button class="primary" type="submit" [disabled]="!canSend()">
+        {{ sendState().tone === 'pending' ? 'Sending smoke event...' : 'Send test error' }}
+      </button>
+    </form>
+
+    <section class="status-panel" [class.pending]="sendState().tone === 'pending'" [class.success]="sendState().tone === 'success'" [class.error]="sendState().tone === 'error'">
+      <p class="status-label">Status</p>
+      <h2>{{ sendState().title }}</h2>
+      <p>{{ sendState().detail }}</p>
+
+      <dl class="status-meta">
+        <div>
+          <dt>Package</dt>
+          <dd>{{ packageName }}</dd>
+        </div>
+        <div>
+          <dt>Install</dt>
+          <dd><code>{{ packageInstall }}</code></dd>
+        </div>
+        <div>
+          <dt>Endpoint</dt>
+          <dd><code>{{ normalizedTenantHost() || 'Configure a tenant host' }}</code></dd>
+        </div>
+        <div>
+          <dt>Ingest route</dt>
+          <dd><code>/api/events/ingest</code></dd>
+        </div>
+        <div>
+          <dt>Header</dt>
+          <dd><code>X-API-Key</code></dd>
+        </div>
+        <div>
+          <dt>Latest smoke ID</dt>
+          <dd><code>{{ lastSmokeId() || 'Not sent yet' }}</code></dd>
+        </div>
+        <div>
+          <dt>Latest release</dt>
+          <dd><code>{{ lastRelease() || 'Not sent yet' }}</code></dd>
+        </div>
+      </dl>
+    </section>
+  </section>
+
+  <section class="verification">
+    <h3>Hosted verification</h3>
+    <ol>
+      <li>Open your tenant workspace in FaultLens.</li>
+      <li>Open the target project that matches the project API key you used.</li>
+      <li>Open <strong>Events</strong> and search for the smoke ID or release shown above.</li>
+      <li>Open the event detail to confirm the environment and release values match this sample submission.</li>
+    </ol>
+  </section>
+</main>
