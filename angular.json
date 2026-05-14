@@ -4,23 +4,25 @@
   "cli": {
     "packageManager": "npm"
   },
-  "newProjectRoot": "projects",
+  "newProjectRoot": "samples",
   "projects": {
-    "faultlens-frontend-samples": {
+    "faultlens-angular-sample": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
           "style": "scss"
         }
       },
-      "root": "",
-      "sourceRoot": "src",
+      "root": "samples/angular",
+      "sourceRoot": "samples/angular/src",
       "prefix": "app",
       "architect": {
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "browser": "src/main.ts",
+            "browser": "samples/angular/src/main.ts",
+            "index": "samples/angular/src/index.html",
+            "outputPath": "dist/faultlens-angular-sample",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
@@ -30,7 +32,7 @@
               }
             ],
             "styles": [
-              "src/styles.scss"
+              "samples/shared/styles.scss"
             ]
           },
           "configurations": {
@@ -61,10 +63,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "faultlens-frontend-samples:build:production"
+              "buildTarget": "faultlens-angular-sample:build:production"
             },
             "development": {
-              "buildTarget": "faultlens-frontend-samples:build:development"
+              "buildTarget": "faultlens-angular-sample:build:development"
             }
           },
           "defaultConfiguration": "development"

@@ -1,22 +1,18 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, signal } from '@angular/core';
+import {
+  Component,
+  EnvironmentInjector,
+  WritableSignal,
+  computed,
+  createEnvironmentInjector,
+  importProvidersFrom,
+  inject,
+  signal
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { FaultLens } from '@faultlenshq/browser';
-
-declare global {
-  interface Window {
-    __FAULTLENS_SAMPLE_CONFIG__?: Partial<SampleFormState>;
-  }
-}
-
-type SampleFormState = {
-  tenantHost: string;
-  projectApiKey: string;
-  environment: FaultLensEnvironment;
-  releasePrefix: string;
-};
-
-type FaultLensEnvironment = 'staging' | 'production' | 'development';
+import { FaultLensModule, FaultLensService } from '@faultlenshq/angular';
+import { FaultLensConfig } from '@faultlenshq/browser';
+import { normalizeEnvironment, readRuntimeConfig } from '../../../shared/sample-config';
 
 type SendState = {
   tone: 'idle' | 'pending' | 'success' | 'error';
@@ -29,12 +25,13 @@ const defaultConfig = readRuntimeConfig();
 @Component({
   selector: 'app-root',
   imports: [CommonModule, FormsModule],
-  templateUrl: './app.html',
-  styleUrl: './app.scss'
+  templateUrl: './angular-sample.html',
+  styleUrl: '../../../shared/sample-page.scss'
 })
-export class App {
-  protected readonly packageName = '@faultlenshq/browser';
-  protected readonly packageInstall = 'npm install @faultlenshq/browser@beta';
+export class AngularSample {
+  private readonly environmentInjector = inject(EnvironmentInjector);
+  protected readonly packageName = '@faultlenshq/angular';
+  protected readonly packageInstall = 'npm install @faultlenshq/angular@0.1.0-beta.2 @faultlenshq/browser@0.1.0-beta.3';
   protected readonly environment = signal(defaultConfig.environment);
   protected readonly releasePrefix = signal(defaultConfig.releasePrefix);
   protected readonly projectApiKey = signal(defaultConfig.projectApiKey);
@@ -44,7 +41,7 @@ export class App {
   protected readonly sendState = signal<SendState>({
     tone: 'idle',
     title: 'Ready',
-    detail: 'Enter your tenant host and project API key, then send a smoke event.'
+    detail: 'Enter your tenant host and project API key, then send an Angular-native smoke event.'
   });
   protected readonly canSend = computed(() =>
     Boolean(this.normalizedTenantHost()) &&
@@ -53,74 +50,12 @@ export class App {
     this.sendState().tone !== 'pending'
   );
 
-  protected async sendSmokeEvent(): Promise<void> {
-    const tenantHost = this.normalizedTenantHost();
-    const projectApiKey = this.projectApiKey().trim();
-    const environment = normalizeEnvironment(this.environment());
-    const releasePrefix = this.releasePrefix().trim() || 'frontend-sample';
+  protected async sendMessage(): Promise<void> {
+    await this.sendSmoke('message');
+  }
 
-    if (!tenantHost || !projectApiKey) {
-      this.sendState.set({
-        tone: 'error',
-        title: 'Missing configuration',
-        detail: 'Provide both a tenant host and a project API key before sending a smoke event.'
-      });
-      return;
-    }
-
-    const smokeId = createSmokeId();
-    const release = `${releasePrefix}-${smokeId}`;
-    const message = `FaultLens frontend sample smoke ${smokeId}`;
-
-    this.lastSmokeId.set(smokeId);
-    this.lastRelease.set(release);
-    this.sendState.set({
-      tone: 'pending',
-      title: 'Sending event',
-      detail: `Submitting smoke ID ${smokeId} to ${tenantHost}/api/events/ingest...`
-    });
-
-    try {
-      const sdk = new FaultLens({
-        apiKey: projectApiKey,
-        projectId: 'configured-by-api-key',
-        environment,
-        endpoint: tenantHost,
-        platform: 'browser',
-        release
-      }, {
-        debug: true
-      });
-
-      sdk.setContext({
-        sampleApp: 'faultlens-frontend-samples',
-        smokeId,
-        package: this.packageName
-      });
-
-      sdk.addBreadcrumb({
-        category: 'sample',
-        message: `Preparing browser smoke ${smokeId}`,
-        data: {
-          smokeId,
-          release
-        }
-      });
-
-      await this.captureDeliveryResult(tenantHost, () => {
-        sdk.captureError(new Error(message), {
-          smokeId,
-          release,
-          sample: 'faultlens-frontend-samples'
-        });
-      });
-    } catch (error) {
-      this.sendState.set({
-        tone: 'error',
-        title: 'Sample failed before send',
-        detail: error instanceof Error ? error.message : 'Unexpected browser SDK setup error.'
-      });
-    }
+  protected async sendException(): Promise<void> {
+    await this.sendSmoke('exception');
   }
 
   protected applyTenantHost(value: string): void {
@@ -143,10 +78,108 @@ export class App {
     return normalizeTenantHost(this.tenantHost());
   }
 
-  private async captureDeliveryResult(tenantHost: string, triggerSend: () => void): Promise<void> {
+  private async sendSmoke(kind: 'message' | 'exception'): Promise<void> {
+    const tenantHost = this.normalizedTenantHost();
+    const projectApiKey = this.projectApiKey().trim();
+    const environment = normalizeEnvironment(this.environment());
+    const releasePrefix = this.releasePrefix().trim() || 'frontend-sample';
+
+    if (!tenantHost || !projectApiKey) {
+      this.sendState.set({
+        tone: 'error',
+        title: 'Missing configuration',
+        detail: 'Provide both a tenant host and a project API key before sending an Angular-native smoke event.'
+      });
+      return;
+    }
+
+    const smokeId = createSmokeId();
+    const release = `${releasePrefix}-angular-${smokeId}`;
+    const message = kind === 'message'
+      ? `FaultLens Angular-native sample message ${smokeId}`
+      : `FaultLens Angular-native sample exception ${smokeId}`;
+
+    this.lastSmokeId.set(smokeId);
+    this.lastRelease.set(release);
+    this.sendState.set({
+      tone: 'pending',
+      title: 'Sending Angular-native event',
+      detail: `Submitting smoke ID ${smokeId} to ${tenantHost}/api/events/ingest...`
+    });
+
+    try {
+      const faultLens = this.createFaultLensService({
+        apiKey: projectApiKey,
+        projectId: 'configured-by-api-key',
+        environment,
+        endpoint: tenantHost,
+        platform: 'angular',
+        release
+      });
+
+      faultLens.setContext({
+        sampleApp: 'faultlens-angular-sample',
+        smokeId,
+        package: this.packageName,
+        mode: 'angular-native'
+      });
+      faultLens.setUserId('angular-demo-user');
+      faultLens.setTag('sample', 'angular');
+      faultLens.setTags({
+        feature: 'angular-native',
+        flow: 'manual-smoke-test'
+      });
+      faultLens.addBreadcrumb({
+        category: 'sample.angular',
+        message: `Preparing Angular-native ${kind} smoke ${smokeId}`,
+        data: { smokeId, release, kind }
+      });
+
+      await this.captureDeliveryResult(this.sendState, smokeId, release, () => {
+        const error = kind === 'message'
+          ? new Error(message)
+          : new Error(`${message}: simulated component failure`);
+
+        if (kind === 'message') {
+          error.name = 'Message';
+        }
+
+        faultLens.captureError(error, {
+          smokeId,
+          release,
+          sample: 'faultlens-angular-sample',
+          mode: 'angular-native',
+          kind,
+          diagnosticsUserId: 'angular-demo-user'
+        });
+      });
+    } catch (error) {
+      this.sendState.set({
+        tone: 'error',
+        title: 'Angular-native sample failed before send',
+        detail: error instanceof Error ? error.message : 'Unexpected Angular-native SDK setup error.'
+      });
+    }
+  }
+
+  private createFaultLensService(config: FaultLensConfig): FaultLensService {
+    const injector = createEnvironmentInjector([
+      importProvidersFrom(FaultLensModule.forRoot(config, { debug: true }))
+    ], this.environmentInjector);
+
+    return injector.get(FaultLensService);
+  }
+
+  private async captureDeliveryResult(
+    state: WritableSignal<SendState>,
+    smokeId: string,
+    release: string,
+    triggerSend: () => void
+  ): Promise<void> {
+    const tenantHost = this.normalizedTenantHost();
     const originalFetch = globalThis.fetch?.bind(globalThis);
     if (!originalFetch) {
-      this.sendState.set({
+      state.set({
         tone: 'error',
         title: 'Browser fetch unavailable',
         detail: 'This browser runtime does not expose fetch, so the sample cannot verify delivery.'
@@ -163,16 +196,14 @@ export class App {
       };
 
       const timeoutId = window.setTimeout(() => {
-        if (resolved) {
-          return;
-        }
+        if (resolved) return;
 
         resolved = true;
         restore();
-        this.sendState.set({
+        state.set({
           tone: 'success',
           title: 'Request submitted',
-          detail: `The browser SDK issued the ingest request. Check FaultLens Events using smoke ID ${this.lastSmokeId()}.`
+          detail: `The Angular SDK issued the ingest request. Check FaultLens Events using smoke ID ${smokeId}.`
         });
         resolve();
       }, 6000);
@@ -191,10 +222,10 @@ export class App {
           window.clearTimeout(timeoutId);
           restore();
 
-          this.sendState.set(response.ok ? {
+          state.set(response.ok ? {
             tone: 'success',
             title: 'Delivered',
-            detail: `FaultLens accepted smoke ID ${this.lastSmokeId()} for release ${this.lastRelease()}. Verify it in your project Events view.`
+            detail: `FaultLens accepted smoke ID ${smokeId} for release ${release}. Verify it in your project Events view.`
           } : {
             tone: 'error',
             title: `Delivery failed (${response.status})`,
@@ -214,10 +245,10 @@ export class App {
           resolved = true;
           window.clearTimeout(timeoutId);
           restore();
-          this.sendState.set({
+          state.set({
             tone: 'error',
             title: 'Send failed',
-            detail: error instanceof Error ? error.message : 'Unexpected browser SDK error.'
+            detail: error instanceof Error ? error.message : 'Unexpected Angular SDK error.'
           });
           resolve();
         }
@@ -226,22 +257,9 @@ export class App {
   }
 }
 
-function readRuntimeConfig(): SampleFormState {
-  const runtime = window.__FAULTLENS_SAMPLE_CONFIG__ ?? {};
-
-  return {
-    tenantHost: runtime.tenantHost?.trim() ?? '',
-    projectApiKey: runtime.projectApiKey?.trim() ?? '',
-    environment: normalizeEnvironment(runtime.environment),
-    releasePrefix: runtime.releasePrefix?.trim() ?? 'frontend-sample'
-  };
-}
-
 function normalizeTenantHost(value: string): string {
   const trimmed = value.trim();
-  if (!trimmed) {
-    return '';
-  }
+  if (!trimmed) return '';
 
   const withProtocol = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
   return withProtocol.replace(/\/+$/, '');
@@ -253,14 +271,4 @@ function createSmokeId(): string {
   }
 
   return `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
-}
-
-function normalizeEnvironment(value: string | undefined): FaultLensEnvironment {
-  const normalized = value?.trim().toLowerCase();
-
-  if (normalized === 'production' || normalized === 'development') {
-    return normalized;
-  }
-
-  return 'staging';
 }

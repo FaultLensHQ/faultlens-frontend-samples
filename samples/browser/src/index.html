@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>FaultLens Browser SDK Sample</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="stylesheet" href="styles.css">
+  <script src="browser-sample-config.js"></script>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <p class="eyebrow">FaultLens Browser Sample</p>
+      <h1>Test the browser SDK against your own FaultLens workspace.</h1>
+      <p class="lede">
+        This framework-free TypeScript sample sends one unique smoke event with <code data-package-name></code>
+        so you can verify tenant-host ingestion, project key setup, and hosted event visibility before wiring
+        the SDK into your app.
+      </p>
+    </section>
+
+    <section class="workspace">
+      <form class="config-panel" data-smoke-form>
+        <p class="panel-label">Browser SDK</p>
+        <div class="field">
+          <label for="tenant-host">Tenant host</label>
+          <input id="tenant-host" name="tenant-host" type="url" placeholder="https://tenant-slug.staging.faultlens.in" autocomplete="off" data-tenant-host>
+          <p class="hint">Use your tenant workspace host, not the shared app host.</p>
+        </div>
+
+        <div class="field">
+          <label for="project-api-key">Project API key</label>
+          <input id="project-api-key" name="project-api-key" type="password" placeholder="Paste the project ingest key" autocomplete="off" data-project-api-key>
+          <p class="hint">Get this from the project setup panel or project overview in FaultLens.</p>
+        </div>
+
+        <div class="grid">
+          <div class="field">
+            <label for="environment">Environment</label>
+            <input id="environment" name="environment" type="text" placeholder="staging" data-environment>
+          </div>
+
+          <div class="field">
+            <label for="release-prefix">Release prefix</label>
+            <input id="release-prefix" name="release-prefix" type="text" placeholder="frontend-sample" data-release-prefix>
+          </div>
+        </div>
+
+        <button class="primary" type="submit" data-send-button>Send test error</button>
+      </form>
+
+      <section class="status-panel" data-status-panel>
+        <p class="status-label">Status</p>
+        <h2 data-status-title>Ready</h2>
+        <p data-status-detail>Enter your tenant host and project API key, then send a browser SDK smoke event.</p>
+
+        <dl class="status-meta">
+          <div>
+            <dt>Package</dt>
+            <dd data-package-name></dd>
+          </div>
+          <div>
+            <dt>Install</dt>
+            <dd><code data-package-install></code></dd>
+          </div>
+          <div>
+            <dt>Endpoint</dt>
+            <dd><code data-endpoint>Configure a tenant host</code></dd>
+          </div>
+          <div>
+            <dt>Ingest route</dt>
+            <dd><code>/api/events/ingest</code></dd>
+          </div>
+          <div>
+            <dt>Header</dt>
+            <dd><code>X-API-Key</code></dd>
+          </div>
+          <div>
+            <dt>Latest smoke ID</dt>
+            <dd><code data-smoke-id>Not sent yet</code></dd>
+          </div>
+          <div>
+            <dt>Latest release</dt>
+            <dd><code data-release>Not sent yet</code></dd>
+          </div>
+        </dl>
+      </section>
+    </section>
+
+    <section class="verification">
+      <h3>Hosted verification</h3>
+      <ol>
+        <li>Open your tenant workspace in FaultLens.</li>
+        <li>Open the target project that matches the project API key you used.</li>
+        <li>Open <strong>Events</strong> and search for the smoke ID or release shown above.</li>
+        <li>Open the event detail to confirm the environment and release values match this sample submission.</li>
+        <li>Confirm diagnostics context includes the requested URL, browser user agent, demo user ID, and sample tags.</li>
+      </ol>
+    </section>
+  </main>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>

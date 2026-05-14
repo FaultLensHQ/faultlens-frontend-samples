@@ -7,9 +7,10 @@
     "types": []
   },
   "include": [
-    "src/**/*.ts"
+    "samples/angular/**/*.ts",
+    "samples/shared/**/*.ts"
   ],
   "exclude": [
-    "src/**/*.spec.ts"
+    "samples/angular/**/*.spec.ts"
   ]
 }

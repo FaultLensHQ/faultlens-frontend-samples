@@ -1,6 +1,16 @@
-:host {
-  display: block;
-  min-height: 100vh;
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: #07111f;
+  font-family: Inter, "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
   color: #d9e2f2;
 }
 
@@ -79,6 +89,15 @@ h1 {
   padding: 24px;
 }
 
+.panel-label {
+  margin-bottom: 16px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #7fb7ff;
+}
+
 .field {
   display: grid;
   gap: 8px;
@@ -111,7 +130,6 @@ input {
   color: #f7fbff;
   padding: 0 14px;
   font: inherit;
-  box-sizing: border-box;
 }
 
 input:focus {

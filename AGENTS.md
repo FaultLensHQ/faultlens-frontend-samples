@@ -48,9 +48,10 @@ Read this before starting any task in this repo.
 
 - **No hardcoded secrets**: configuration is injected at runtime via `window.__FAULTLENS_SAMPLE_CONFIG__` (populated by `docker/runtime-config.sh` from environment variables). Do not embed real API keys, tenant credentials, or production hosts in committed code.
 - **Environment variables**: the expected runtime variables are `FAULTLENS_TENANT_HOST`, `FAULTLENS_PROJECT_API_KEY`, `FAULTLENS_ENVIRONMENT`, and `FAULTLENS_RELEASE_PREFIX`. Use these names consistently.
-- **SDK version**: the sample uses `@faultlenshq/browser@0.1.0-beta.2`. Do not bump the SDK version unless the issue explicitly requires it.
+- **SDK version**: the sample uses `@faultlenshq/browser@0.1.0-beta.3` and `@faultlenshq/angular@0.1.0-beta.2`. Do not bump SDK versions unless the issue explicitly requires it.
 - **Ingestion endpoint**: the SDK posts to `POST /api/events/ingest` with `X-API-Key`. Preserve this unless the issue explicitly changes the endpoint model.
-- **Docker/nginx**: preserve the Docker and nginx local run flow. The `docker/runtime-config.sh` injects config at container start — do not bypass or break this.
+- **Docker/nginx**: preserve the Docker and nginx local run flow for each sample. The `docker/runtime-config.sh` injects config at container start — do not bypass or break this.
+- **Sample layout**: keep each sample isolated under `samples/<sample-name>/src`. The direct browser SDK sample belongs under `samples/browser` and should remain framework-free TypeScript. Framework-native samples, including Angular and future React, should be sibling folders under `samples/`. Shared sample-only utilities and styles belong under `samples/shared`.
 - **Sample errors should be intentional**: errors thrown in sample code should be deliberate, clearly labelled, and useful for validating FaultLens capture behavior. Do not add accidental or silent failures.
 - **Keep README aligned**: if sample behavior, configuration, or run instructions change, update `README.md` to match.
 
@@ -60,7 +61,7 @@ Read this before starting any task in this repo.
 
 - Run `npm run build` to confirm the Angular build passes.
 - Run `npm test` if tests exist or were changed (Karma/jsdom).
-- Confirm Docker build with `docker build .` if Dockerfile or nginx config was changed.
+- Confirm Docker builds with the app-specific Dockerfiles if Dockerfile or nginx config was changed.
 - Include exact commands and results in the final response.
 
 ---

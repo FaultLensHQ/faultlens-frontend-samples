@@ -1,15 +1,16 @@
 <main class="shell">
   <section class="hero">
-    <p class="eyebrow">FaultLens Frontend Sample</p>
-    <h1>Test the browser SDK against your own FaultLens workspace.</h1>
+    <p class="eyebrow">FaultLens Angular Sample</p>
+    <h1>Test @faultlenshq/angular against your own FaultLens workspace.</h1>
     <p class="lede">
-      This Angular sample sends one unique smoke event with <code>{{ packageName }}</code> so you can verify
-      tenant-host ingestion, project key setup, and hosted event visibility without wiring the SDK into your app first.
+      This Angular 21 sample sends smoke events through <code>{{ packageName }}</code> and reuses
+      the same runtime configuration contract as the browser SDK sample.
     </p>
   </section>
 
   <section class="workspace">
-    <form class="config-panel" (submit)="$event.preventDefault(); sendSmokeEvent()">
+    <form class="config-panel" (submit)="$event.preventDefault(); sendMessage()">
+      <p class="panel-label">Angular-native SDK</p>
       <div class="field">
         <label for="tenant-host">Tenant host</label>
         <input
@@ -60,9 +61,14 @@
         </div>
       </div>
 
-      <button class="primary" type="submit" [disabled]="!canSend()">
-        {{ sendState().tone === 'pending' ? 'Sending smoke event...' : 'Send test error' }}
-      </button>
+      <div class="button-row">
+        <button class="primary" type="submit" [disabled]="!canSend()">
+          {{ sendState().tone === 'pending' ? 'Sending...' : 'Send Angular message' }}
+        </button>
+        <button class="secondary" type="button" [disabled]="!canSend()" (click)="sendException()">
+          Send Angular exception
+        </button>
+      </div>
     </form>
 
     <section class="status-panel" [class.pending]="sendState().tone === 'pending'" [class.success]="sendState().tone === 'success'" [class.error]="sendState().tone === 'error'">
@@ -84,20 +90,12 @@
           <dd><code>{{ normalizedTenantHost() || 'Configure a tenant host' }}</code></dd>
         </div>
         <div>
-          <dt>Ingest route</dt>
-          <dd><code>/api/events/ingest</code></dd>
-        </div>
-        <div>
-          <dt>Header</dt>
-          <dd><code>X-API-Key</code></dd>
-        </div>
-        <div>
           <dt>Latest smoke ID</dt>
           <dd><code>{{ lastSmokeId() || 'Not sent yet' }}</code></dd>
         </div>
         <div>
-          <dt>Latest release</dt>
-          <dd><code>{{ lastRelease() || 'Not sent yet' }}</code></dd>
+          <dt>Diagnostics</dt>
+          <dd><code>angular-demo-user / sample=angular</code></dd>
         </div>
       </dl>
     </section>
@@ -107,9 +105,9 @@
     <h3>Hosted verification</h3>
     <ol>
       <li>Open your tenant workspace in FaultLens.</li>
-      <li>Open the target project that matches the project API key you used.</li>
+      <li>Open the project that matches the project API key you used.</li>
       <li>Open <strong>Events</strong> and search for the smoke ID or release shown above.</li>
-      <li>Open the event detail to confirm the environment and release values match this sample submission.</li>
+      <li>Confirm diagnostics context includes requested URL, browser user agent, <code>userId = angular-demo-user</code>, and Angular sample tags.</li>
     </ol>
   </section>
 </main>

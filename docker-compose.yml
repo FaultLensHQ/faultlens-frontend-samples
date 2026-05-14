@@ -1,12 +1,24 @@
 services:
-  faultlens-frontend-sample:
+  faultlens-browser-sample:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.browser
     ports:
       - "8080:80"
     environment:
       FAULTLENS_TENANT_HOST: https://TENANT-SLUG.staging.faultlens.in
       FAULTLENS_PROJECT_API_KEY: CHANGE_ME
       FAULTLENS_ENVIRONMENT: staging
-      FAULTLENS_RELEASE_PREFIX: frontend-sample
+      FAULTLENS_RELEASE_PREFIX: frontend-browser-sample
+
+  faultlens-angular-sample:
+    build:
+      context: .
+      dockerfile: Dockerfile.angular
+    ports:
+      - "8081:80"
+    environment:
+      FAULTLENS_TENANT_HOST: https://TENANT-SLUG.staging.faultlens.in
+      FAULTLENS_PROJECT_API_KEY: CHANGE_ME
+      FAULTLENS_ENVIRONMENT: staging
+      FAULTLENS_RELEASE_PREFIX: frontend-angular-sample
