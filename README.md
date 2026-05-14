@@ -12,20 +12,24 @@ These samples use the current beta SDK packages and should be treated as early p
 
 ```bash
 npm install @faultlenshq/browser@0.1.0-beta.3
+npm install @faultlenshq/angular@0.1.0-beta.2 @faultlenshq/browser@0.1.0-beta.3
+npm install @faultlenshq/react@0.1.0-beta.1 @faultlenshq/browser@0.1.0-beta.3 react react-dom
 ```
 
 Current published beta used by this sample:
 
 - `@faultlenshq/browser@0.1.0-beta.3`
 - `@faultlenshq/angular@0.1.0-beta.2`
+- `@faultlenshq/react@0.1.0-beta.1`
 
 ## Samples
 
 - `samples/browser`: framework-free TypeScript app that uses `@faultlenshq/browser` directly.
 - `samples/angular`: Angular 21 app that uses `@faultlenshq/angular` and its Angular service/module API.
+- `samples/react`: React 19 app that uses `@faultlenshq/react` provider, hook, and error boundary APIs.
 - `samples/shared`: runtime config and shared styling used by the sample apps.
 
-This layout keeps each sample app isolated. Future framework samples, such as React, should live beside these under `samples/`.
+This layout keeps each sample app isolated. Future framework samples should live beside these under `samples/`.
 
 ## What you need
 
@@ -104,6 +108,28 @@ Use the same tenant host, project API key, environment, and release prefix, then
 
 The Angular flow uses `FaultLensModule.forRoot(...)` and `FaultLensService`, sets `userId = angular-demo-user`, and attaches tags for `sample=angular`, `feature=angular-native`, and `flow=manual-smoke-test`.
 
+## React sample
+
+Run the React sample separately:
+
+```bash
+npm run start:react
+```
+
+Open:
+
+```text
+http://localhost:4202
+```
+
+Use the same tenant host, project API key, environment, and release prefix, then click:
+
+- **Send React message**
+- **Send React exception**
+- **Trigger boundary error**
+
+The React flow uses `FaultLensProvider`, `useFaultLens()`, and `ErrorBoundary`, sets `userId = react-demo-user`, and attaches tags for `sample=react`, `feature=react-native`, and `flow=manual-smoke-test`.
+
 ## Docker run
 
 Build and run the browser SDK sample:
@@ -136,14 +162,30 @@ docker run --rm -p 8081:80 ^
   faultlens-angular-sample
 ```
 
+Build and run the React sample:
+
+```bash
+docker build -f Dockerfile.react -t faultlens-react-sample .
+```
+
+```bash
+docker run --rm -p 8082:80 ^
+  -e FAULTLENS_TENANT_HOST=https://TENANT-SLUG.staging.faultlens.in ^
+  -e FAULTLENS_PROJECT_API_KEY=YOUR_PROJECT_API_KEY ^
+  -e FAULTLENS_ENVIRONMENT=staging ^
+  -e FAULTLENS_RELEASE_PREFIX=frontend-react-sample ^
+  faultlens-react-sample
+```
+
 Then open one of:
 
 ```text
 http://localhost:8080
 http://localhost:8081
+http://localhost:8082
 ```
 
-`docker-compose.yml` runs both samples: browser SDK on port `8080` and Angular on port `8081`.
+`docker-compose.yml` runs all samples: browser SDK on port `8080`, Angular on port `8081`, and React on port `8082`.
 
 ## How to verify the event in FaultLens hosted UI
 
@@ -154,5 +196,6 @@ http://localhost:8081
 5. Open the event detail and confirm the environment and release values match the sample submission.
 6. Confirm diagnostics context includes the requested URL, browser user agent, `userId = local-browser-demo-user`, and tags for `sample=frontend`, `feature=diagnostics-context`, and `flow=manual-smoke-test`.
 7. For Angular submissions, confirm `userId = angular-demo-user` and tags for `sample=angular`, `feature=angular-native`, and `flow=manual-smoke-test`.
+8. For React submissions, confirm `userId = react-demo-user` and tags for `sample=react`, `feature=react-native`, and `flow=manual-smoke-test`.
 
 The browser SDK captures URL/referrer/user-agent context from browser globals where available. The sample does not read or send cookies, `localStorage`, `sessionStorage`, request bodies, or secrets.

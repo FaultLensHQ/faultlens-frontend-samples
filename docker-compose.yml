@@ -22,3 +22,15 @@ services:
       FAULTLENS_PROJECT_API_KEY: CHANGE_ME
       FAULTLENS_ENVIRONMENT: staging
       FAULTLENS_RELEASE_PREFIX: frontend-angular-sample
+
+  faultlens-react-sample:
+    build:
+      context: .
+      dockerfile: Dockerfile.react
+    ports:
+      - "8082:80"
+    environment:
+      FAULTLENS_TENANT_HOST: https://TENANT-SLUG.staging.faultlens.in
+      FAULTLENS_PROJECT_API_KEY: CHANGE_ME
+      FAULTLENS_ENVIRONMENT: staging
+      FAULTLENS_RELEASE_PREFIX: frontend-react-sample

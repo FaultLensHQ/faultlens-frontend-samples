@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "outDir": "./out-tsc/react",
+    "types": []
+  },
+  "include": [
+    "samples/react/**/*.ts",
+    "samples/react/**/*.tsx",
+    "samples/shared/**/*.ts"
+  ]
+}
