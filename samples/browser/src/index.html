@@ -10,92 +10,145 @@
 </head>
 <body>
   <main class="shell">
-    <section class="hero">
-      <p class="eyebrow">FaultLens Browser Sample</p>
-      <h1>Test the browser SDK against your own FaultLens workspace.</h1>
+    <header class="hero">
+      <p class="eyebrow">FaultLens Browser SDK Sample</p>
+      <h1>Validate browser-side diagnostic evidence before adding the SDK to your app.</h1>
       <p class="lede">
-        This framework-free TypeScript sample sends one unique smoke event with <code data-package-name></code>
-        so you can verify tenant-host ingestion, project key setup, and hosted event visibility before wiring
-        the SDK into your app.
+        This framework-free TypeScript sample uses <code data-package-name></code>
+        <code data-package-version></code> to demonstrate setup, breadcrumbs, route/page context,
+        identity, manual capture APIs, network breadcrumbs, and redacted values.
       </p>
-    </section>
+    </header>
 
     <section class="workspace">
-      <form class="config-panel" data-smoke-form>
-        <p class="panel-label">Browser SDK</p>
+      <form class="config-panel" data-config-form>
+        <div class="panel-heading">
+          <p class="panel-label">Setup</p>
+          <button class="primary" type="submit">Initialize SDK</button>
+        </div>
+
         <div class="field">
-          <label for="tenant-host">Tenant host</label>
+          <label for="tenant-host">Endpoint or tenant host</label>
           <input id="tenant-host" name="tenant-host" type="url" placeholder="https://tenant-slug.staging.faultlens.in" autocomplete="off" data-tenant-host>
-          <p class="hint">Use your tenant workspace host, not the shared app host.</p>
+          <p class="hint">Use your FaultLens endpoint or tenant host. The SDK posts to <code>/api/events/ingest</code> when a host is provided.</p>
         </div>
 
         <div class="field">
           <label for="project-api-key">Project API key</label>
-          <input id="project-api-key" name="project-api-key" type="password" placeholder="Paste the project ingest key" autocomplete="off" data-project-api-key>
-          <p class="hint">Get this from the project setup panel or project overview in FaultLens.</p>
+          <input id="project-api-key" name="project-api-key" type="password" placeholder="Paste a project ingest key" autocomplete="off" data-project-api-key>
+          <p class="hint">Do not commit real keys. This sample only reads values from local runtime configuration.</p>
         </div>
 
         <div class="grid">
           <div class="field">
             <label for="environment">Environment</label>
-            <input id="environment" name="environment" type="text" placeholder="staging" data-environment>
+            <input id="environment" name="environment" type="text" placeholder="development" data-environment>
           </div>
 
           <div class="field">
             <label for="release-prefix">Release prefix</label>
-            <input id="release-prefix" name="release-prefix" type="text" placeholder="frontend-sample" data-release-prefix>
+            <input id="release-prefix" name="release-prefix" type="text" placeholder="browser-sample-local" data-release-prefix>
           </div>
         </div>
-
-        <button class="primary" type="submit" data-send-button>Send test error</button>
       </form>
 
-      <section class="status-panel" data-status-panel>
-        <p class="status-label">Status</p>
-        <h2 data-status-title>Ready</h2>
-        <p data-status-detail>Enter your tenant host and project API key, then send a browser SDK smoke event.</p>
-
+      <section class="status-panel" aria-label="Setup status">
+        <p class="panel-label">Setup Status</p>
         <dl class="status-meta">
           <div>
-            <dt>Package</dt>
-            <dd data-package-name></dd>
+            <dt>API key</dt>
+            <dd data-status-api-key>missing</dd>
+          </div>
+          <div>
+            <dt>Endpoint</dt>
+            <dd data-status-endpoint>missing</dd>
+          </div>
+          <div>
+            <dt>Environment</dt>
+            <dd data-status-environment>development</dd>
+          </div>
+          <div>
+            <dt>Release</dt>
+            <dd data-status-release>browser-sample-local</dd>
+          </div>
+          <div>
+            <dt>Identity</dt>
+            <dd data-status-identity>not set</dd>
+          </div>
+          <div>
+            <dt>Route/page</dt>
+            <dd data-status-route>Dashboard (/dashboard)</dd>
           </div>
           <div>
             <dt>Install</dt>
             <dd><code data-package-install></code></dd>
           </div>
-          <div>
-            <dt>Endpoint</dt>
-            <dd><code data-endpoint>Configure a tenant host</code></dd>
-          </div>
-          <div>
-            <dt>Ingest route</dt>
-            <dd><code>/api/events/ingest</code></dd>
-          </div>
-          <div>
-            <dt>Header</dt>
-            <dd><code>X-API-Key</code></dd>
-          </div>
-          <div>
-            <dt>Latest smoke ID</dt>
-            <dd><code data-smoke-id>Not sent yet</code></dd>
-          </div>
-          <div>
-            <dt>Latest release</dt>
-            <dd><code data-release>Not sent yet</code></dd>
-          </div>
         </dl>
       </section>
     </section>
 
+    <section class="actions" aria-label="Demo actions">
+      <div class="section-heading">
+        <p class="panel-label">Demo Actions</p>
+        <p>Demo values only. Do not send real secrets, passwords, tokens, payment data, names, or emails.</p>
+      </div>
+
+      <div class="action-grid">
+        <button type="button" class="action-card" data-action="anonymous">
+          <strong>Set anonymous identity</strong>
+          <span>Uses <code>anon_sample_user</code>.</span>
+        </button>
+        <button type="button" class="action-card" data-action="known">
+          <strong>Set known identity</strong>
+          <span>Uses opaque demo user/account/tenant IDs.</span>
+        </button>
+        <button type="button" class="action-card" data-action="breadcrumb">
+          <strong>Add breadcrumb</strong>
+          <span>Adds a UI click breadcrumb.</span>
+        </button>
+        <button type="button" class="action-card" data-action="route">
+          <strong>Simulate route change</strong>
+          <span>Toggles dashboard and checkout route/page context.</span>
+        </button>
+        <button type="button" class="action-card" data-action="message">
+          <strong>Capture message</strong>
+          <span>Sends an informational diagnostic event.</span>
+        </button>
+        <button type="button" class="action-card" data-action="exception">
+          <strong>Capture handled exception</strong>
+          <span>Throws, catches, and captures a deliberate sample error.</span>
+        </button>
+        <button type="button" class="action-card" data-action="trail">
+          <strong>Capture breadcrumb trail</strong>
+          <span>Adds breadcrumbs before capturing an error.</span>
+        </button>
+        <button type="button" class="action-card" data-action="network">
+          <strong>Trigger safe network request</strong>
+          <span>Attempts a harmless request without credentials or body.</span>
+        </button>
+        <button type="button" class="action-card" data-action="redaction">
+          <strong>Trigger redaction demo</strong>
+          <span>Uses demo token/password/apiKey fields that should be filtered.</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="log-panel" aria-label="Local event log">
+      <div class="section-heading">
+        <p class="panel-label">Event Log</p>
+        <p>Local UI log only. Secrets are not displayed here.</p>
+      </div>
+      <ol class="event-log" data-event-log></ol>
+    </section>
+
     <section class="verification">
-      <h3>Hosted verification</h3>
+      <h2>What to verify in FaultLens</h2>
       <ol>
-        <li>Open your tenant workspace in FaultLens.</li>
-        <li>Open the target project that matches the project API key you used.</li>
-        <li>Open <strong>Events</strong> and search for the smoke ID or release shown above.</li>
-        <li>Open the event detail to confirm the environment and release values match this sample submission.</li>
-        <li>Confirm diagnostics context includes the requested URL, browser user agent, demo user ID, and sample tags.</li>
+        <li>Captured messages and exceptions include service name, service version, environment, release, and SDK metadata.</li>
+        <li>Breadcrumbs show UI clicks, navigation changes, custom flow steps, and safe network metadata.</li>
+        <li>Route/page context shows Dashboard or Checkout with the previous path when changed.</li>
+        <li>Identity fields use opaque demo IDs only.</li>
+        <li>Redaction demo values appear as redacted values, not raw token/password/apiKey strings.</li>
       </ol>
     </section>
   </main>

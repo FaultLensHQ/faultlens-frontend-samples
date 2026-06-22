@@ -2,25 +2,27 @@
 
 Frontend sample apps for testing FaultLens SDK packages against your own tenant workspace.
 
-This repo is intended for end users who want minimal, cloneable samples before wiring FaultLens into their own frontend application.
+These samples are minimal, cloneable onboarding apps that help developers validate FaultLens integration before wiring the SDK into their own frontend. They demonstrate diagnostic evidence, breadcrumbs, route/page context, and safe manual capture flows.
 
 ## Beta preview
 
-These samples use the current beta SDK packages and should be treated as early preview integration paths.
+These samples use beta SDK packages and should be treated as early preview integration paths.
 
 ## Package used
 
 ```bash
-npm install @faultlenshq/browser@0.1.0-beta.3
-npm install @faultlenshq/angular@0.1.0-beta.2 @faultlenshq/browser@0.1.0-beta.3
-npm install @faultlenshq/react@0.1.0-beta.1 @faultlenshq/browser@0.1.0-beta.3 react react-dom
+npm install @faultlenshq/browser@0.1.0-beta.4
+npm install @faultlenshq/angular@0.1.0-beta.3 @faultlenshq/browser@0.1.0-beta.4
+npm install @faultlenshq/react@0.1.0-beta.2 @faultlenshq/browser@0.1.0-beta.4 react react-dom
 ```
 
-Current published beta used by this sample:
+Current beta packages used by this repo:
 
-- `@faultlenshq/browser@0.1.0-beta.3`
-- `@faultlenshq/angular@0.1.0-beta.2`
-- `@faultlenshq/react@0.1.0-beta.1`
+- `@faultlenshq/browser@0.1.0-beta.4` for the official browser SDK sample.
+- `@faultlenshq/angular@0.1.0-beta.3` for the Angular sample.
+- `@faultlenshq/react@0.1.0-beta.2` for the React sample.
+
+Angular and React wrapper samples still reference their current wrapper-compatible browser peer version until wrapper beta releases are advanced.
 
 ## Samples
 
@@ -29,40 +31,48 @@ Current published beta used by this sample:
 - `samples/react`: React 19 app that uses `@faultlenshq/react` provider, hook, and error boundary APIs.
 - `samples/shared`: runtime config and shared styling used by the sample apps.
 
-This layout keeps each sample app isolated. Future framework samples should live beside these under `samples/`.
-
 ## What you need
 
 - Node.js 20+
 - npm 10+
-- your FaultLens tenant host
+- your FaultLens endpoint or tenant host
 - your FaultLens project API key
 
-## Where to get the tenant host
+Do not commit real `.env` files, API keys, tenant credentials, names, emails, passwords, tokens, or payment data.
 
-Use your tenant workspace host, for example:
+## Environment configuration
 
-```text
-https://TENANT-SLUG.staging.faultlens.in
+Copy the example file when adapting the sample:
+
+```bash
+cp .env.example .env
 ```
 
-Do not use the shared app host for browser SDK ingestion.
+The framework-free sample in this repository reads runtime configuration from `window.__FAULTLENS_SAMPLE_CONFIG__`, populated by `public/browser-sample-config.js` locally and by `docker/runtime-config.sh` in containers.
 
-## Where to get the project API key
+The repository runtime variables are:
 
-In FaultLens, open the target project and copy the project ingest/API key from the project overview or setup surface.
+```env
+FAULTLENS_TENANT_HOST=https://tenant-slug.staging.faultlens.in
+FAULTLENS_PROJECT_API_KEY=replace_with_project_api_key
+FAULTLENS_ENVIRONMENT=development
+FAULTLENS_RELEASE_PREFIX=browser-sample-local
+```
 
-## Current endpoint model
+`.env.example` also includes Vite-style names for developers copying the browser SDK sample into a Vite app:
 
-For the current staging and beta validation flow:
+```env
+VITE_FAULTLENS_API_KEY=replace_with_project_api_key
+VITE_FAULTLENS_ENDPOINT=https://api.faultlens.in/api/events/ingest
+VITE_FAULTLENS_ENVIRONMENT=development
+VITE_FAULTLENS_RELEASE=browser-sample-local
+```
 
-- configure the tenant host
-- the SDK posts to `POST /api/events/ingest`
-- the SDK sends the project key with `X-API-Key`
+If your hosted endpoint differs, replace it with the endpoint or tenant host provided for your FaultLens workspace.
 
-Central API host support is planned separately.
+## Browser SDK sample
 
-## Local run
+Run the framework-free browser sample:
 
 ```bash
 npm install
@@ -75,17 +85,49 @@ Open:
 http://localhost:4200
 ```
 
-Enter:
+Configure:
 
-- tenant host
+- endpoint or tenant host
 - project API key
 - environment
 - release prefix
 
-Then click **Send test error**.
+The sample initializes `@faultlenshq/browser@0.1.0-beta.4` with:
 
-The sample creates a unique smoke ID and release suffix for each submission.
-It also sets diagnostics context with `userId = local-browser-demo-user` and tags for `sample`, `feature`, and `flow`.
+- `apiKey`
+- `endpoint`
+- `environment`
+- `release`
+- `serviceName = faultlens-browser-sample`
+- `serviceVersion = 0.1.0-beta.4`
+
+### Browser demo actions
+
+- **Set anonymous identity**: sets `anon_sample_user`.
+- **Set known identity**: sets opaque demo IDs: `user_sample_123`, `acct_sample_123`, and `tenant_sample_123`.
+- **Add breadcrumb**: adds a UI click breadcrumb.
+- **Simulate route change**: toggles `/dashboard` and `/checkout`, including previous path and route name.
+- **Capture message**: sends a manual informational event with tags and context.
+- **Capture handled exception**: throws, catches, and captures a deliberate sample error.
+- **Capture breadcrumb trail**: adds custom breadcrumbs before capturing an error.
+- **Trigger safe network request**: attempts a harmless request without credentials, auth headers, or request body so network breadcrumbs can be inspected.
+- **Trigger redaction demo**: sends demo-only sensitive keys such as `token`, `password`, and `apiKey` to show redacted values.
+
+Demo values only. Do not send real secrets, passwords, tokens, payment data, names, or emails.
+
+### What should appear in FaultLens
+
+In the event detail, inspect:
+
+- diagnostic evidence for message and exception events
+- breadcrumbs for UI clicks, route changes, custom flow steps, and network breadcrumbs
+- route/page context for Dashboard or Checkout and previous path
+- tags such as `feature=browser-sdk-sample` and `plan=demo`
+- context values such as `sampleApp`, `package`, and demo order/cart IDs
+- opaque identity IDs only
+- redacted values for sensitive keys
+
+The sample helps investigate frontend errors by showing what safe browser-side evidence can look like. It does not send cookies, local storage, session storage, auth headers, request bodies with sensitive values, or real user personal data.
 
 ## Angular sample
 
@@ -142,8 +184,8 @@ docker build -f Dockerfile.browser -t faultlens-browser-sample .
 docker run --rm -p 8080:80 ^
   -e FAULTLENS_TENANT_HOST=https://TENANT-SLUG.staging.faultlens.in ^
   -e FAULTLENS_PROJECT_API_KEY=YOUR_PROJECT_API_KEY ^
-  -e FAULTLENS_ENVIRONMENT=staging ^
-  -e FAULTLENS_RELEASE_PREFIX=frontend-browser-sample ^
+  -e FAULTLENS_ENVIRONMENT=development ^
+  -e FAULTLENS_RELEASE_PREFIX=browser-sample-local ^
   faultlens-browser-sample
 ```
 
@@ -187,15 +229,19 @@ http://localhost:8082
 
 `docker-compose.yml` runs all samples: browser SDK on port `8080`, Angular on port `8081`, and React on port `8082`.
 
+## Privacy guidance
+
+- Use opaque user/account/tenant IDs, not names or email addresses.
+- Use demo-only values when testing redaction behavior.
+- Do not send real secrets, passwords, tokens, API keys, card data, payment data, or private user content.
+- Do not add auth headers or credentialed requests to the network breadcrumb demo.
+- Review diagnostic evidence in FaultLens before enabling similar capture in a production app.
+
 ## How to verify the event in FaultLens hosted UI
 
 1. Open your tenant workspace.
 2. Open the project that matches the API key you used.
 3. Open **Events**.
-4. Search for the smoke ID or release shown by the sample app.
-5. Open the event detail and confirm the environment and release values match the sample submission.
-6. Confirm diagnostics context includes the requested URL, browser user agent, `userId = local-browser-demo-user`, and tags for `sample=frontend`, `feature=diagnostics-context`, and `flow=manual-smoke-test`.
-7. For Angular submissions, confirm `userId = angular-demo-user` and tags for `sample=angular`, `feature=angular-native`, and `flow=manual-smoke-test`.
-8. For React submissions, confirm `userId = react-demo-user` and tags for `sample=react`, `feature=react-native`, and `flow=manual-smoke-test`.
-
-The browser SDK captures URL/referrer/user-agent context from browser globals where available. The sample does not read or send cookies, `localStorage`, `sessionStorage`, request bodies, or secrets.
+4. Search by release, route, message, or a demo action label from the local event log.
+5. Open the event detail and confirm the environment, release, service name, and service version match the sample.
+6. Confirm breadcrumbs, route/page context, tags, opaque identity IDs, and redacted values appear as expected.
