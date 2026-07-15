@@ -8,21 +8,23 @@ These samples are minimal, cloneable onboarding apps that help developers valida
 
 These samples use beta SDK packages and should be treated as early preview integration paths.
 
-## Package used
+## Packages used
+
+Install the SDK packages unpinned — the wrapper `peerDependencies` resolve a compatible
+`@faultlenshq/browser` automatically, so these commands never produce a peer-dependency conflict:
 
 ```bash
-npm install @faultlenshq/browser@0.1.0-beta.4
-npm install @faultlenshq/angular@0.1.0-beta.3 @faultlenshq/browser@0.1.0-beta.4
-npm install @faultlenshq/react@0.1.0-beta.2 @faultlenshq/browser@0.1.0-beta.4 react react-dom
+npm install @faultlenshq/browser
+npm install @faultlenshq/angular @faultlenshq/browser
+npm install @faultlenshq/react @faultlenshq/browser react react-dom
 ```
 
-Current beta packages used by this repo:
+- `@faultlenshq/browser` — framework-free browser SDK sample.
+- `@faultlenshq/angular` — Angular sample (wrapper over the browser SDK).
+- `@faultlenshq/react` — React sample (wrapper over the browser SDK).
 
-- `@faultlenshq/browser@0.1.0-beta.4` for the official browser SDK sample.
-- `@faultlenshq/angular@0.1.0-beta.3` for the Angular sample.
-- `@faultlenshq/react@0.1.0-beta.2` for the React sample.
-
-Angular and React wrapper samples still reference their current wrapper-compatible browser peer version until wrapper beta releases are advanced.
+This repo pins exact versions in `package.json` for reproducible sample builds; the install
+commands above are what you copy into your own app.
 
 ## Samples
 

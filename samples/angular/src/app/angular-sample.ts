@@ -31,7 +31,7 @@ const defaultConfig = readRuntimeConfig();
 export class AngularSample {
   private readonly environmentInjector = inject(EnvironmentInjector);
   protected readonly packageName = '@faultlenshq/angular';
-  protected readonly packageInstall = 'npm install @faultlenshq/angular@0.1.0-beta.2 @faultlenshq/browser@0.1.0-beta.3';
+  protected readonly packageInstall = 'npm install @faultlenshq/angular @faultlenshq/browser';
   protected readonly environment = signal(defaultConfig.environment);
   protected readonly releasePrefix = signal(defaultConfig.releasePrefix);
   protected readonly projectApiKey = signal(defaultConfig.projectApiKey);
