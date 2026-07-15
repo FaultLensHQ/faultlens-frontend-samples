@@ -138,6 +138,10 @@ function ReactSample(props: ReactSampleProps): React.ReactElement {
         feature: 'react-native',
         flow: 'manual-smoke-test'
       });
+      // Business-impact metadata (typed helpers, RC.2): emitted as
+      // faultlens.capability / faultlens.criticality / faultlens.operation.
+      faultLens.setCapability('checkout', 'critical');
+      faultLens.setOperation('payment.capture');
       faultLens.addBreadcrumb({
         category: 'sample.react',
         message: `Preparing React ${kind} smoke ${smokeId}`,
@@ -147,22 +151,26 @@ function ReactSample(props: ReactSampleProps): React.ReactElement {
       await captureDeliveryResult(props.tenantHost, props.setSendState, smokeId, release, () => {
         if (kind === 'message') {
           faultLens.captureMessage(`FaultLens React sample message ${smokeId}`, {
-            smokeId,
-            release,
-            sample: 'faultlens-react-sample',
-            kind,
-            diagnosticsUserId: 'react-demo-user'
+            tags: {
+              smokeId,
+              release,
+              sample: 'faultlens-react-sample',
+              kind,
+              diagnosticsUserId: 'react-demo-user'
+            }
           });
           return;
         }
 
         if (kind === 'exception') {
           faultLens.captureException(new Error(`FaultLens React sample exception ${smokeId}`), {
-            smokeId,
-            release,
-            sample: 'faultlens-react-sample',
-            kind,
-            diagnosticsUserId: 'react-demo-user'
+            tags: {
+              smokeId,
+              release,
+              sample: 'faultlens-react-sample',
+              kind,
+              diagnosticsUserId: 'react-demo-user'
+            }
           });
           return;
         }
