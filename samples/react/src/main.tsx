@@ -24,7 +24,7 @@ type FormState = {
 };
 
 const packageName = '@faultlenshq/react';
-const packageInstall = 'npm install @faultlenshq/react@0.1.0-beta.1 @faultlenshq/browser@0.1.0-beta.3 react react-dom';
+const packageInstall = 'npm install @faultlenshq/react @faultlenshq/browser react react-dom';
 const defaultConfig = readRuntimeConfig();
 
 function App(): React.ReactElement {
