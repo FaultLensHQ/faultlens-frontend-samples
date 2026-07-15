@@ -118,6 +118,10 @@ function initializeSdk(): boolean {
     feature: 'browser-sdk-sample',
     plan: 'demo'
   });
+  // Business-impact metadata (typed helpers, RC.2). Emitted as the canonical
+  // reserved tags: faultlens.capability / faultlens.criticality / faultlens.operation.
+  FaultLens.setCapability('checkout', 'critical');
+  FaultLens.setOperation('payment.capture');
   FaultLens.setContext('sample', {
     sampleApp: serviceName,
     package: packageName,

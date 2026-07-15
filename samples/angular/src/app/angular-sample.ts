@@ -129,6 +129,10 @@ export class AngularSample {
         feature: 'angular-native',
         flow: 'manual-smoke-test'
       });
+      // Business-impact metadata (typed helpers, RC.2): emitted as
+      // faultlens.capability / faultlens.criticality / faultlens.operation.
+      faultLens.setCapability('checkout', 'critical');
+      faultLens.setOperation('payment.capture');
       faultLens.addBreadcrumb({
         category: 'sample.angular',
         message: `Preparing Angular-native ${kind} smoke ${smokeId}`,
