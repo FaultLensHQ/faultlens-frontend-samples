@@ -31,7 +31,7 @@ const defaultConfig = readRuntimeConfig();
 export class AngularSample {
   private readonly environmentInjector = inject(EnvironmentInjector);
   protected readonly packageName = '@faultlenshq/angular';
-  protected readonly packageInstall = 'npm install @faultlenshq/angular @faultlenshq/browser';
+  protected readonly packageInstall = 'npm install @faultlenshq/angular@1.0.0 @faultlenshq/browser@1.0.0';
   protected readonly environment = signal(defaultConfig.environment);
   protected readonly releasePrefix = signal(defaultConfig.releasePrefix);
   protected readonly projectApiKey = signal(defaultConfig.projectApiKey);
@@ -129,7 +129,7 @@ export class AngularSample {
         feature: 'angular-native',
         flow: 'manual-smoke-test'
       });
-      // Business-impact metadata (typed helpers, RC.2): emitted as
+      // Business-impact metadata (typed helpers): emitted as
       // faultlens.capability / faultlens.criticality / faultlens.operation.
       faultLens.setCapability('checkout', 'critical');
       faultLens.setOperation('payment.capture');
