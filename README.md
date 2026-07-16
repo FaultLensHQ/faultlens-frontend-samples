@@ -4,19 +4,21 @@ Frontend sample apps for testing FaultLens SDK packages against your own tenant 
 
 These samples are minimal, cloneable onboarding apps that help developers validate FaultLens integration before wiring the SDK into their own frontend. They demonstrate diagnostic evidence, breadcrumbs, route/page context, and safe manual capture flows.
 
-## Beta preview
+## Platform support
 
-These samples use beta SDK packages and should be treated as early preview integration paths.
+FaultLens supports any platform. Use an official SDK where available, or integrate directly using
+the HTTP ingestion API. These samples cover the official frontend SDKs, released together as a
+synchronized `1.0.0` family.
 
 ## Packages used
 
-Install the SDK packages unpinned — the wrapper `peerDependencies` resolve a compatible
-`@faultlenshq/browser` automatically, so these commands never produce a peer-dependency conflict:
+The wrapper `peerDependencies` pin a compatible `@faultlenshq/browser`, so installing the matching
+`1.0.0` pair resolves cleanly:
 
 ```bash
-npm install @faultlenshq/browser
-npm install @faultlenshq/angular @faultlenshq/browser
-npm install @faultlenshq/react @faultlenshq/browser react react-dom
+npm install @faultlenshq/browser@1.0.0
+npm install @faultlenshq/angular@1.0.0 @faultlenshq/browser@1.0.0
+npm install @faultlenshq/react@1.0.0 @faultlenshq/browser@1.0.0 react react-dom
 ```
 
 - `@faultlenshq/browser` — framework-free browser SDK sample.
@@ -94,14 +96,14 @@ Configure:
 - environment
 - release prefix
 
-The sample initializes `@faultlenshq/browser@0.1.0-beta.4` with:
+The sample initializes `@faultlenshq/browser@1.0.0` with:
 
 - `apiKey`
 - `endpoint`
 - `environment`
 - `release`
 - `serviceName = faultlens-browser-sample`
-- `serviceVersion = 0.1.0-beta.4`
+- `serviceVersion = 1.0.0`
 
 ### Browser demo actions
 

@@ -27,7 +27,7 @@ README.md                    run instructions and integration guide
 | Layer | Choice |
 |---|---|
 | Frameworks | TypeScript/browser, Angular 21 standalone, React 19 |
-| FaultLens SDK | `@faultlenshq/browser@0.1.0-beta.3`, `@faultlenshq/angular@0.1.0-beta.2`, `@faultlenshq/react@0.1.0-beta.1` |
+| FaultLens SDK | `@faultlenshq/browser@1.0.0`, `@faultlenshq/angular@1.0.0`, `@faultlenshq/react@1.0.0` |
 | Language | TypeScript 5.9 |
 | Containerised run | Docker + nginx |
 
@@ -52,7 +52,7 @@ docker-compose up                       # run all samples with Docker Compose (r
 - **Runtime config injection**: `docker/runtime-config.sh` writes `window.__FAULTLENS_SAMPLE_CONFIG__` to a JS file served by nginx before the app loads. The app reads SDK config from this global. Do not assume `environment.ts` holds the live config.
 - **Sample isolation**: each app owns its entrypoint under `samples/<sample-name>/src`. Shared code belongs in `samples/shared`. Add future samples, such as React, as sibling folders under `samples/`.
 - **No hardcoded secrets**: `FAULTLENS_TENANT_HOST` and `FAULTLENS_PROJECT_API_KEY` must come from environment variables and never committed values.
-- **Beta SDK**: this sample tracks the current beta release. Check `@faultlenshq/browser` version in `package.json` before assuming any API is stable.
+- **Stable SDK**: these samples track the `1.0.0` release family. Check the `@faultlenshq/browser` version in `package.json` before assuming any API is present.
 - **`private: true`**: this repo is not published to npm.
 
 ## ClaudeCode-specific notes

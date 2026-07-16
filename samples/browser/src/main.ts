@@ -11,7 +11,7 @@ type LogEntry = {
 };
 
 const packageName = '@faultlenshq/browser';
-const packageVersion = '0.1.0-beta.4';
+const packageVersion = '1.0.0';
 const packageInstall = `npm install ${packageName}@${packageVersion}`;
 const serviceName = 'faultlens-browser-sample';
 const defaultConfig = readRuntimeConfig();
@@ -118,7 +118,7 @@ function initializeSdk(): boolean {
     feature: 'browser-sdk-sample',
     plan: 'demo'
   });
-  // Business-impact metadata (typed helpers, RC.2). Emitted as the canonical
+  // Business-impact metadata (typed helpers). Emitted as the canonical
   // reserved tags: faultlens.capability / faultlens.criticality / faultlens.operation.
   FaultLens.setCapability('checkout', 'critical');
   FaultLens.setOperation('payment.capture');

@@ -24,7 +24,7 @@ type FormState = {
 };
 
 const packageName = '@faultlenshq/react';
-const packageInstall = 'npm install @faultlenshq/react @faultlenshq/browser react react-dom';
+const packageInstall = 'npm install @faultlenshq/react@1.0.0 @faultlenshq/browser@1.0.0 react react-dom';
 const defaultConfig = readRuntimeConfig();
 
 function App(): React.ReactElement {
@@ -138,7 +138,7 @@ function ReactSample(props: ReactSampleProps): React.ReactElement {
         feature: 'react-native',
         flow: 'manual-smoke-test'
       });
-      // Business-impact metadata (typed helpers, RC.2): emitted as
+      // Business-impact metadata (typed helpers): emitted as
       // faultlens.capability / faultlens.criticality / faultlens.operation.
       faultLens.setCapability('checkout', 'critical');
       faultLens.setOperation('payment.capture');
