@@ -1,77 +1,39 @@
 # AGENTS.md — faultlens-frontend-samples
 
-Canonical shared instruction file for all coding agents (ClaudeCode, Codex, and equivalents).
-This repo owns **frontend sample applications** for FaultLens — minimal, cloneable apps that help developers validate and demonstrate FaultLens SDK integration before wiring it into their own frontend.
-Read this before starting any task in this repo.
+Repository-local overlay for FaultLens frontend sample applications.
 
----
+Samples are onboarding/integration tools, not product applications.
 
-## Sample principle
+## Purpose
 
-- Samples should help developers understand and validate FaultLens integration quickly.
-- Samples should demonstrate useful error, event, and breadcrumb capture flows.
-- Keep samples simple and realistic — they are onboarding tools, not product applications.
-- Do not turn samples into full product apps with full auth, dashboards, or admin features.
-- Every sample change should support faster onboarding, SDK validation, or triage-flow demonstration.
+- demonstrate FaultLens SDK integration quickly and realistically;
+- provide intentional error/event/breadcrumb flows that developers can run locally;
+- stay minimal enough to clone/read without teaching unsafe production patterns.
 
----
+## Stable rules
 
-## Work mode
+- Never hard-code real secrets, API keys, tenant credentials or production-only endpoints.
+- Use the repository's existing runtime configuration mechanism/environment variables; do not bypass it by embedding values in source.
+- Read current SDK/package versions from `package.json`/lockfiles. Do not duplicate volatile versions in this governance file.
+- Preserve the current ingestion/public SDK contract unless an explicitly approved SDK/product decision changes it.
+- Keep each sample isolated under the repository's existing sample structure; shared sample-only utilities belong in the shared sample area.
+- Intentional sample errors must be clearly labelled and useful for capture validation.
+- Keep README/run instructions aligned when behavior/configuration changes.
+- Preserve Docker/nginx/runtime-config flows where the affected sample uses them.
 
-- Aggressive build mode. Implementation-first.
-- Minimal, production-safe changes.
-- Avoid broad rewrites unless explicitly required.
-- Keep sample flows easy to run locally.
+## Decision boundary
 
----
+A sample task must not redefine SDK public semantics, package versions, ingestion contracts or privacy behavior. If a change requires that, route the decision/design to the owning SDK/backend work first.
 
-## GitHub tracking workflow
+**Discovery does not imply priority.** Do not turn sample cleanup into a product/SDK redesign.
 
-- Open a GitHub issue before starting feature work. Do not create duplicate issues.
-- Use `C:\PersonalProjects\faultlens-ui\issue-body.md` as the scratch file for issue bodies and comments.
-- After validation, update the issue using `gh issue comment` with `--body-file`.
-- Do not close issues unless implementation is complete and validated.
-- Keep GitHub CLI commands simple.
+## Repository discipline
 
----
+- GitHub issues/PRs are the durable work record.
+- Persist decisions/evidence in GitHub rather than workstation-specific scratch paths.
+- Follow this repo's actual default branch/release configuration.
+- Do not publish packages or deploy unless explicitly authorized.
 
-## Repo, branch, and release rules
+## Validation
 
-- Repo name: `faultlens-frontend-samples`.
-- Follow the existing branch convention used by this repo. Do not switch branch strategy casually.
-- Do not publish npm packages — this repo is `"private": true`.
-- Do not deploy unless explicitly requested.
-
----
-
-## Sample app rules
-
-- **No hardcoded secrets**: configuration is injected at runtime via `window.__FAULTLENS_SAMPLE_CONFIG__` (populated by `docker/runtime-config.sh` from environment variables). Do not embed real API keys, tenant credentials, or production hosts in committed code.
-- **Environment variables**: the expected runtime variables are `FAULTLENS_TENANT_HOST`, `FAULTLENS_PROJECT_API_KEY`, `FAULTLENS_ENVIRONMENT`, and `FAULTLENS_RELEASE_PREFIX`. Use these names consistently.
-- **SDK version**: the samples use `@faultlenshq/browser@1.0.0`, `@faultlenshq/angular@1.0.0`, and `@faultlenshq/react@1.0.0`. Do not bump SDK versions unless the issue explicitly requires it.
-- **Ingestion endpoint**: the SDK posts to `POST /api/events/ingest` with `X-API-Key`. Preserve this unless the issue explicitly changes the endpoint model.
-- **Docker/nginx**: preserve the Docker and nginx local run flow for each sample. The `docker/runtime-config.sh` injects config at container start — do not bypass or break this.
-- **Sample layout**: keep each sample isolated under `samples/<sample-name>/src`. The direct browser SDK sample belongs under `samples/browser` and should remain framework-free TypeScript. Framework-native samples, including Angular and React, should be sibling folders under `samples/`. Shared sample-only utilities and styles belong under `samples/shared`.
-- **Sample errors should be intentional**: errors thrown in sample code should be deliberate, clearly labelled, and useful for validating FaultLens capture behavior. Do not add accidental or silent failures.
-- **Keep README aligned**: if sample behavior, configuration, or run instructions change, update `README.md` to match.
-
----
-
-## Validation expectations
-
-- Run `npm run build` to confirm the Angular build passes.
-- Run `npm test` if tests exist or were changed (Karma/jsdom).
-- Confirm Docker builds with the app-specific Dockerfiles if Dockerfile or nginx config was changed.
-- Include exact commands and results in the final response.
-
----
-
-## Final response format
-
-Max 8 bullets covering:
-
-- Files changed
-- What changed and why
-- Validation commands and results
-- GitHub issue update status
-- Follow-up notes (only when useful)
+Use current `package.json`/workspace configuration to run the affected build/tests and Docker validation where applicable. Report exact commands/results; never claim an unexecuted check passed.
