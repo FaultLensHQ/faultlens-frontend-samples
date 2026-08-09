@@ -1,65 +1,31 @@
-# CLAUDE.md - faultlens-frontend-samples (ClaudeCode)
+# CLAUDE.md — faultlens-frontend-samples
 
-> **Read [AGENTS.md](AGENTS.md) first.** It is the canonical shared rule file covering sample purpose, work mode, GitHub tracking, branch rules, configuration/secret safety, SDK version, ingestion endpoint, Docker/nginx conventions, and validation expectations. This file contains only ClaudeCode-specific notes.
+Read `AGENTS.md` first. This file contains Claude-specific sample execution notes only.
 
----
+## Purpose and context
 
-FaultLens Frontend Samples - framework-focused sample apps demonstrating FaultLens browser and Angular SDK integration.
+FaultLens frontend samples are minimal integration/onboarding applications for the supported browser/framework SDKs. They demonstrate current supported SDK behavior; they do not define SDK product semantics.
 
-## Layout
+Before editing:
 
-```
-samples/browser/  Framework-free TypeScript app using @faultlenshq/browser directly
-samples/angular/  Angular 21 app using @faultlenshq/angular
-samples/react/    React app using @faultlenshq/react
-samples/shared/   Shared runtime config reader and sample page styling
-docker/                      runtime-config.sh injects env vars into window.__FAULTLENS_SAMPLE_CONFIG__
-public/                      static assets served by each sample app
-Dockerfile.browser           browser SDK sample image
-Dockerfile.angular           Angular sample image
-Dockerfile.react             React sample image
-docker-compose.yml           local Docker run for all samples
-README.md                    run instructions and integration guide
-```
+- read the affected sample, current `package.json`/lockfile and SDK public API it uses;
+- derive current framework/SDK/tool versions from authoritative repository configuration rather than this file;
+- route any required SDK public-contract/privacy/ingestion change to the owning SDK/backend Product Decision/Design work rather than changing semantics inside a sample.
 
-## Stack
+## Stable repository conventions
 
-| Layer | Choice |
-|---|---|
-| Frameworks | TypeScript/browser, Angular 21 standalone, React 19 |
-| FaultLens SDK | `@faultlenshq/browser@1.0.0`, `@faultlenshq/angular@1.0.0`, `@faultlenshq/react@1.0.0` |
-| Language | TypeScript 5.9 |
-| Containerised run | Docker + nginx |
+- Keep each sample isolated under the existing `samples/<sample-name>/` structure; genuinely shared sample-only utilities/styles belong in the shared sample area.
+- Preserve the framework-free direct browser sample where currently supported; framework samples remain sibling integrations rather than being folded into one application.
+- Preserve the existing runtime-configuration injection path used by Docker/nginx. Read exact variable/global names from current runtime-config scripts and sample code rather than copying volatile values into governance.
+- Never hard-code real secrets, project API keys, tenant credentials or production-only endpoints.
+- Keep this repository non-publishable as configured; do not publish packages.
+- If sample behavior, configuration or run instructions change, update `README.md` in the same change.
 
-## Commands
+## Editing and validation
 
-```bash
-npm start                # browser SDK sample static dev server
-npm run start:browser    # browser SDK sample static dev server
-npm run start:angular    # Angular sample dev server
-npm run start:react      # React sample static dev server
-npm run build            # production build for all samples
-npm test                 # Angular unit tests, if specs exist
-
-docker build -f Dockerfile.browser .    # build browser SDK sample image
-docker build -f Dockerfile.angular .    # build Angular sample image
-docker build -f Dockerfile.react .      # build React sample image
-docker-compose up                       # run all samples with Docker Compose (requires env vars)
-```
-
-## Non-obvious conventions
-
-- **Runtime config injection**: `docker/runtime-config.sh` writes `window.__FAULTLENS_SAMPLE_CONFIG__` to a JS file served by nginx before the app loads. The app reads SDK config from this global. Do not assume `environment.ts` holds the live config.
-- **Sample isolation**: each app owns its entrypoint under `samples/<sample-name>/src`. Shared code belongs in `samples/shared`. Add future samples, such as React, as sibling folders under `samples/`.
-- **No hardcoded secrets**: `FAULTLENS_TENANT_HOST` and `FAULTLENS_PROJECT_API_KEY` must come from environment variables and never committed values.
-- **Stable SDK**: these samples track the `1.0.0` release family. Check the `@faultlenshq/browser` version in `package.json` before assuming any API is present.
-- **`private: true`**: this repo is not published to npm.
-
-## ClaudeCode-specific notes
-
-- Stay implementation-first. Keep samples simple and do not expand them into product applications.
-- Read only the files needed for the task before editing. Prefer targeted diffs over full rewrites.
-- Keep diffs narrow: no formatting churn and no unrelated renames.
-- If sample behavior or run instructions change, update `README.md` in the same commit.
-- After validation, update the GitHub issue using a temporary ignored body file and `gh issue comment --body-file`.
-- Do not deploy or publish unless explicitly requested.
+- Prefer targeted diffs; avoid formatting churn and unrelated renames.
+- Keep sample flows minimal and intentional; do not expand them into product applications.
+- Intentional sample failures/errors must remain clearly labelled and useful for validating FaultLens capture.
+- Use current package/workspace scripts for build/test and Docker validation where applicable; report exact commands/results.
+- Persist material decisions/evidence in GitHub using repository-neutral temporary files when a body file is useful.
+- Do not deploy or publish unless explicitly authorized.
